@@ -9,13 +9,21 @@ QT       += core gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = bookmarks
+INCLUDEPATH += src
+CONFIG += C++11
 TEMPLATE = app
 
 
-SOURCES += main.cpp\
-        mainwindow.cpp
+SOURCES += \
+    src/main.cpp \
+    src/mainwindow.cpp
 
-HEADERS  += mainwindow.h \
-    src/show.h
+HEADERS  += \
+    src/show.h \
+    src/mainwindow.h
 
-FORMS    += mainwindow.ui
+FORMS    += \
+    src/mainwindow.ui
+
+DISTFILES += \
+    defaults.pri
