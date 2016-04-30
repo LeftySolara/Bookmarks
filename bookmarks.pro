@@ -27,4 +27,5 @@ FORMS    += \
     src/mainwindow.ui
 
 DISTFILES += \
-    defaults.pri
+    defaults.pri \
+    scripts/db_init.sql

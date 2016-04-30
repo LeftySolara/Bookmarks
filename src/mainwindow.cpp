@@ -1,5 +1,5 @@
 /******************************************************************************
- * mainwondow.cpp : the main GUI window for the application
+ * mainwindow.cpp : the main GUI window for the application
  * ****************************************************************************
  * Copyright (C) 2016 Jalen Adams
  *
@@ -23,6 +23,7 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QApplication>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -34,4 +35,14 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::on_actionExit_triggered()
+{
+    QApplication::exit();
+}
+
+void MainWindow::on_actionAbout_Qt_triggered()
+{
+    QApplication::aboutQt();
 }
