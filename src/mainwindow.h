@@ -38,9 +38,11 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    bool settingsExist();
+    void applyDefaultSettings();
+
 private slots:
     void on_actionExit_triggered();
-
     void on_actionAbout_Qt_triggered();
 
 private:

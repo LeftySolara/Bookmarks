@@ -24,17 +24,57 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QApplication>
+#include <QDebug>
+#include <QSettings>
+#include <QFileInfo>
+
+#define DATABASE_NAME "bookmarks.sqlite"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    QCoreApplication::setOrganizationName("JalenAdams");
+    QCoreApplication::setApplicationName("Bookmarks");
+    QCoreApplication::setOrganizationDomain("jalenkadams.me");
+
+    if (!settingsExist()) {
+        applyDefaultSettings();
+    }
+
     ui->setupUi(this);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+bool MainWindow::settingsExist()
+{
+    QSettings settings;
+    QFileInfo settings_info(settings.fileName());
+    return settings_info.exists();
+}
+
+void MainWindow::applyDefaultSettings()
+{
+    QSettings settings;
+
+    // Remove previous settings
+    QStringList keys = settings.allKeys();
+    for (QString key : keys) {
+        settings.remove(key);
+    }
+
+    // Database settings
+    QFileInfo settings_info(settings.fileName());
+    QString settingsPath = settings_info.fileName();
+    QString databasePath = settings.fileName().replace(settingsPath, DATABASE_NAME);
+
+    settings.beginGroup("database");
+    settings.setValue("path", databasePath);
+    settings.endGroup();
 }
 
 void MainWindow::on_actionExit_triggered()
