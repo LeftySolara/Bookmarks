@@ -23,33 +23,47 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+
 #include <QApplication>
 #include <QDebug>
 #include <QSettings>
+#include <QFile>
 #include <QFileInfo>
+#include <QSqlQuery>
 
 #define DATABASE_NAME "bookmarks.sqlite"
+#define DATABASE_INIT_SCRIPT "../scripts/db_init.sql"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    QCoreApplication::setOrganizationName("JalenAdams");
+    QCoreApplication::setOrganizationName("Jalen Adams");
     QCoreApplication::setApplicationName("Bookmarks");
     QCoreApplication::setOrganizationDomain("jalenkadams.me");
+
+    errmsg = new QErrorMessage(this);
 
     if (!settingsExist()) {
         applyDefaultSettings();
     }
+
+    createDatabase();
 
     ui->setupUi(this);
 }
 
 MainWindow::~MainWindow()
 {
+    db.close();
+
     delete ui;
+    delete errmsg;
 }
 
+// Check for a config file in the correct location (user scope).
+// On Unix, this is $HOME/.config
+// On Windows, it's %APPDATA%
 bool MainWindow::settingsExist()
 {
     QSettings settings;
@@ -75,6 +89,92 @@ void MainWindow::applyDefaultSettings()
     settings.beginGroup("database");
     settings.setValue("path", databasePath);
     settings.endGroup();
+}
+
+// Create the application database in the location specified in the user's settings.
+// By default, the location is $HOME/.config (on Unix) or %APPDATA% (on Windows).
+// If the database already exists, this method does nothing.
+void MainWindow::createDatabase()
+{
+    QSettings settings;
+    QFile databaseFile;
+
+    settings.beginGroup("database");
+    QString databasePath = settings.value("path").toString();
+    databaseFile.setFileName(databasePath);
+
+    if (databaseFile.exists()) {
+        return;
+    }
+
+    // Create the database file
+    qDebug() << "Creating database file at " + databasePath + "...";
+    databaseFile.open(QIODevice::ReadWrite);
+    if (!databaseFile.exists()) {
+        errmsg->showMessage("Error creating database file.");
+        return;
+    }
+    databaseFile.close();
+
+    // Create a connection to the database
+    db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName(databasePath);
+
+    if (!db.open()) {
+        qDebug() << "Error: could not open database";
+        QCoreApplication::exit();
+    }
+
+    // read a sql script to initialize the database
+    if (!execSqlScript(DATABASE_INIT_SCRIPT)) {
+        qDebug() << "Error reading sql script";
+    }
+
+    settings.endGroup();
+}
+
+// Read a given SQL script and execute each statement on the application database.
+// If execution is successful, returns true. Otherwise, returns false.
+bool MainWindow::execSqlScript(QString filename)
+{
+    QSqlQuery *qry = new QSqlQuery(db);
+    QFile *script = new QFile(this);
+    script->setFileName(filename);
+
+    if (!script->open(QIODevice::ReadOnly)) {
+        return false;
+    }
+
+    QTextStream inStream(script);
+    QString sqlStatement = "";
+
+    while (!inStream.atEnd())
+    {
+        QString line = inStream.readLine();
+
+        if (line.startsWith("--") || line.length() == 0) { // ignore comments and blank lines
+            continue;
+        }
+
+        sqlStatement += line;
+        if (sqlStatement.endsWith(";")) {
+            // remove semicolon at end of line, since QSqlQuery adds them automatically
+            sqlStatement.chop(1);
+            if (qry->prepare(sqlStatement)) {
+                qry->exec();
+                sqlStatement = "";
+            }
+            else {
+              return false;
+            }
+        }
+    }
+    script->close();
+
+    delete script;
+    delete qry;
+
+    return true;
 }
 
 void MainWindow::on_actionExit_triggered()
