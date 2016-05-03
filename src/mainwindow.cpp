@@ -46,9 +46,12 @@ MainWindow::MainWindow(QWidget *parent) :
     if (!logger::setup()) {
         qDebug() << "Could not set up logging function";
     }
+
+    qInfo() << "Starting new application session...";
     errmsg = new QErrorMessage(this);
 
     if (!settingsExist()) {
+        qInfo() << "No settings found. Applying defaults...";
         applyDefaultSettings();
     }
 
@@ -115,6 +118,7 @@ void MainWindow::createDatabase()
     qDebug() << "Creating database file at " + databasePath + "...";
     databaseFile.open(QIODevice::ReadWrite);
     if (!databaseFile.exists()) {
+        qCritical() << "Could not create database file";
         errmsg->showMessage("Error creating database file.");
         return;
     }
@@ -125,7 +129,8 @@ void MainWindow::createDatabase()
     db.setDatabaseName(databasePath);
 
     if (!db.open()) {
-        qDebug() << "Error: could not open database";
+        qCritical() << "Could not open database file";
+        errmsg->showMessage("Error opening database file.");
         QCoreApplication::exit();
     }
 
@@ -135,6 +140,7 @@ void MainWindow::createDatabase()
     }
 
     settings.endGroup();
+    qInfo() << "Database created successfully";
 }
 
 // Read a given SQL script and execute each statement on the application database.
