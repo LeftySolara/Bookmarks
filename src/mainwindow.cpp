@@ -23,6 +23,7 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "logger.h"
 
 #include <QApplication>
 #include <QDebug>
@@ -42,6 +43,9 @@ MainWindow::MainWindow(QWidget *parent) :
     QCoreApplication::setApplicationName("Bookmarks");
     QCoreApplication::setOrganizationDomain("jalenkadams.me");
 
+    if (!logger::setup()) {
+        qDebug() << "Could not set up logging function";
+    }
     errmsg = new QErrorMessage(this);
 
     if (!settingsExist()) {
