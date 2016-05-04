@@ -56,6 +56,11 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 
     createDatabase();
+    QSettings settings;
+
+    tableModel = new QSqlTableModel(this, db);
+    tableModel->setTable(settings.value("DefautCategory"));
+    tableModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
 
     ui->setupUi(this);
 }
@@ -66,6 +71,7 @@ MainWindow::~MainWindow()
 
     delete ui;
     delete errmsg;
+    delete tableModel;
 }
 
 // Check for a config file in the correct location (user scope).
@@ -94,7 +100,8 @@ void MainWindow::applyDefaultSettings()
     QString databasePath = settings.fileName().replace(settingsPath, DATABASE_NAME);
 
     settings.beginGroup("database");
-    settings.setValue("path", databasePath);
+    settings.setValue("Path", databasePath);
+    settings.setValue("DefaultCategory", "show");
     settings.endGroup();
 }
 

@@ -27,6 +27,7 @@
 #include <QMainWindow>
 #include <QErrorMessage>
 #include <QSqlDatabase>
+#include <QSqlTableModel>
 
 namespace Ui {
 class MainWindow;
@@ -54,6 +55,7 @@ private:
     Ui::MainWindow *ui;
     QErrorMessage *errmsg;
     QSqlDatabase db;
+    QSqlTableModel *tableModel;
 };
 
 #endif // MAINWINDOW_H
