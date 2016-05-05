@@ -23,6 +23,7 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "dialogaddmedia.h"
 #include "logger.h"
 
 #include <QApplication>
@@ -59,7 +60,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QSettings settings;
 
     tableModel = new QSqlTableModel(this, db);
-    tableModel->setTable(settings.value("DefautCategory"));
+    tableModel->setTable(settings.value("DefautCategory").toString());
     tableModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
 
     ui->setupUi(this);
@@ -202,4 +203,10 @@ void MainWindow::on_actionExit_triggered()
 void MainWindow::on_actionAbout_Qt_triggered()
 {
     QApplication::aboutQt();
+}
+
+void MainWindow::on_actionAdd_show_triggered()
+{
+    DialogAddMedia *dialog = new DialogAddMedia();
+    dialog->exec();
 }

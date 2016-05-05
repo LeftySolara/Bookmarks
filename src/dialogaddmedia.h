@@ -1,5 +1,5 @@
 /******************************************************************************
- * mainwondow.h : the main GUI window for the application
+ * dialogaddmedia.h : dialog for adding a new show to the database
  * ****************************************************************************
  * Copyright (C) 2016 Jalen Adams
  *
@@ -14,50 +14,49 @@
  *
  * Bookmarks is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Bookmarks. If not, see <http://www.gnu.org/licenses/>.
+ * along with Bookmarks.  If not, see <http://www.gnu.org/licenses/>.
  ***************************************************************************/
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef DIALOGADDMEDIA_H
+#define DIALOGADDMEDIA_H
 
-#include <QMainWindow>
-#include <QErrorMessage>
-#include <QSqlDatabase>
-#include <QSqlTableModel>
+#include <QDialog>
+#include <QLabel>
+#include <QSpinBox>
+#include <QPushButton>
+#include <QComboBox>
+#include <QLineEdit>
+#include <QFormLayout>
 
 namespace Ui {
-class MainWindow;
+class DialogAddMedia;
 }
 
-class MainWindow : public QMainWindow
+class DialogAddMedia : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    explicit DialogAddMedia(QWidget *parent = 0);
+    ~DialogAddMedia();
 
-    bool settingsExist();
-    void applyDefaultSettings();
-
-    void createDatabase();
-    bool execSqlScript(QString filename);
-
-private slots:
-    void on_actionExit_triggered();
-    void on_actionAbout_Qt_triggered();
-
-    void on_actionAdd_show_triggered();
+    void setupLayoutInfo();
 
 private:
-    Ui::MainWindow *ui;
-    QErrorMessage *errmsg;
-    QSqlDatabase db;
-    QSqlTableModel *tableModel;
+    Ui::DialogAddMedia *ui;
+
+   QFormLayout* layoutInfo;
+
+   QLineEdit* lineEditTitle;
+   QSpinBox* spinBoxEpisodesWatched;
+   QSpinBox* spinBoxEpisodesTotal;
+   QComboBox* comboBoxStatus;
+
+
 };
 
-#endif // MAINWINDOW_H
+#endif // DIALOGADDMEDIA_H
