@@ -29,7 +29,12 @@ DialogAddMedia::DialogAddMedia(QWidget *parent) :
     ui(new Ui::DialogAddMedia)
 {
     setupLayoutInfo();
-    this->setLayout(layoutInfo);
+    setupLayoutArtwork();
+
+    layoutMaster = new QHBoxLayout();
+    layoutMaster->addLayout(layoutArtwork);
+    layoutMaster->addLayout(layoutInfo);
+    this->setLayout(layoutMaster);
 
     ui->setupUi(this);
 }
@@ -40,11 +45,18 @@ DialogAddMedia::~DialogAddMedia()
     delete spinBoxEpisodesWatched;
     delete spinBoxEpisodesTotal;
     delete comboBoxStatus;
+    delete artwork;
+    delete artLabel;
+    delete buttonUploadArt;
+    delete buttonDownloadArt;
 
     delete layoutInfo;
+    delete layoutArtwork;
+    delete layoutMaster;
     delete ui;
 }
 
+// Set up the right half of the dialog. Just a basic input form.
 void DialogAddMedia::setupLayoutInfo()
 {
     layoutInfo = new QFormLayout();
@@ -60,4 +72,23 @@ void DialogAddMedia::setupLayoutInfo()
     layoutInfo->addRow("Episodes Watched", spinBoxEpisodesWatched);
     layoutInfo->addRow("Total Episodes", spinBoxEpisodesTotal);
     layoutInfo->addRow("Status", comboBoxStatus);
+}
+
+// Set up the left half of the dialog. Will contain preview artwork for the series, a button for
+// choosing art from a local file, and a button for downloading art from the web.
+void DialogAddMedia::setupLayoutArtwork()
+{
+    layoutArtwork = new QVBoxLayout();
+    buttonUploadArt = new QPushButton("Choose from file");
+    buttonDownloadArt = new QPushButton("Download from web");
+
+    artwork = new QImage(":/images/art_placeholder");
+    artLabel = new QLabel();
+
+    // TODO: lock size so buttons stop overlapping
+    artLabel->setPixmap(QPixmap::fromImage(artwork->scaledToWidth(buttonDownloadArt->width())));
+
+    layoutArtwork->addWidget(artLabel);
+    layoutArtwork->addWidget(buttonUploadArt);
+    layoutArtwork->addWidget(buttonDownloadArt);
 }

@@ -34,3 +34,6 @@ FORMS    += \
 DISTFILES += \
     defaults.pri \
     scripts/db_init.sql
+
+RESOURCES += \
+    resources.qrc

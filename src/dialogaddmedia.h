@@ -25,12 +25,15 @@
 #define DIALOGADDMEDIA_H
 
 #include <QDialog>
+#include <QImage>
 #include <QLabel>
 #include <QSpinBox>
 #include <QPushButton>
 #include <QComboBox>
 #include <QLineEdit>
 #include <QFormLayout>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
 
 namespace Ui {
 class DialogAddMedia;
@@ -45,10 +48,13 @@ public:
     ~DialogAddMedia();
 
     void setupLayoutInfo();
+    void setupLayoutArtwork();
 
 private:
     Ui::DialogAddMedia *ui;
 
+   QHBoxLayout* layoutMaster;
+   QVBoxLayout* layoutArtwork;
    QFormLayout* layoutInfo;
 
    QLineEdit* lineEditTitle;
@@ -56,7 +62,10 @@ private:
    QSpinBox* spinBoxEpisodesTotal;
    QComboBox* comboBoxStatus;
 
-
+   QImage* artwork;
+   QLabel* artLabel;
+   QPushButton* buttonUploadArt;
+   QPushButton* buttonDownloadArt;
 };
 
 #endif // DIALOGADDMEDIA_H
