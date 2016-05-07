@@ -23,6 +23,7 @@
 
 #include "dialogaddmedia.h"
 #include "ui_dialogaddmedia.h"
+#include <QSize>
 
 DialogAddMedia::DialogAddMedia(QWidget *parent) :
     QDialog(parent),
@@ -34,6 +35,7 @@ DialogAddMedia::DialogAddMedia(QWidget *parent) :
     layoutMaster = new QHBoxLayout();
     layoutMaster->addLayout(layoutArtwork);
     layoutMaster->addLayout(layoutInfo);
+    layoutMaster->setSizeConstraint(QHBoxLayout::SetFixedSize);
     this->setLayout(layoutMaster);
 
     ui->setupUi(this);
@@ -60,10 +62,19 @@ DialogAddMedia::~DialogAddMedia()
 void DialogAddMedia::setupLayoutInfo()
 {
     layoutInfo = new QFormLayout();
+    layoutInfo->setSizeConstraint(QFormLayout::SetFixedSize);
+
     lineEditTitle = new QLineEdit();
+    lineEditTitle->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
     spinBoxEpisodesWatched = new QSpinBox();
+    spinBoxEpisodesWatched->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
     spinBoxEpisodesTotal = new QSpinBox();
+    spinBoxEpisodesTotal->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
     comboBoxStatus = new QComboBox();
+    comboBoxStatus->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
     comboBoxStatus->addItem("Ongoing");
     comboBoxStatus->addItem("Completed");
@@ -79,14 +90,20 @@ void DialogAddMedia::setupLayoutInfo()
 void DialogAddMedia::setupLayoutArtwork()
 {
     layoutArtwork = new QVBoxLayout();
+    layoutArtwork->setSizeConstraint(QVBoxLayout::SetFixedSize);
+
     buttonUploadArt = new QPushButton("Choose from file");
     buttonDownloadArt = new QPushButton("Download from web");
+
+    QSize buttonSize(150, 40);
+    buttonUploadArt->setFixedSize(buttonSize);
+    buttonDownloadArt->setFixedSize(buttonSize);
 
     artwork = new QImage(":/images/art_placeholder");
     artLabel = new QLabel();
 
-    // TODO: lock size so buttons stop overlapping
     artLabel->setPixmap(QPixmap::fromImage(artwork->scaledToWidth(buttonDownloadArt->width())));
+    artLabel->setFixedSize(buttonSize.width(), 540);
 
     layoutArtwork->addWidget(artLabel);
     layoutArtwork->addWidget(buttonUploadArt);
