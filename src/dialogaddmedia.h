@@ -50,6 +50,10 @@ public:
     void setupLayoutInfo();
     void setupLayoutArtwork();
 
+private slots:
+    void uploadArtwork();
+
+
 private:
     Ui::DialogAddMedia *ui;
 

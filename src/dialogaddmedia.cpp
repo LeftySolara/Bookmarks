@@ -24,6 +24,7 @@
 #include "dialogaddmedia.h"
 #include "ui_dialogaddmedia.h"
 #include <QSize>
+#include <QFileDialog>
 
 DialogAddMedia::DialogAddMedia(QWidget *parent) :
     QDialog(parent),
@@ -95,6 +96,8 @@ void DialogAddMedia::setupLayoutArtwork()
     buttonUploadArt = new QPushButton("Choose from file");
     buttonDownloadArt = new QPushButton("Download from web");
 
+    connect(buttonUploadArt, SIGNAL(clicked()), this, SLOT(uploadArtwork()));
+
     QSize buttonSize(150, 40);
     buttonUploadArt->setFixedSize(buttonSize);
     buttonDownloadArt->setFixedSize(buttonSize);
@@ -108,4 +111,12 @@ void DialogAddMedia::setupLayoutArtwork()
     layoutArtwork->addWidget(artLabel);
     layoutArtwork->addWidget(buttonUploadArt);
     layoutArtwork->addWidget(buttonDownloadArt);
+}
+
+void DialogAddMedia::uploadArtwork()
+{
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open Image"), "~/", tr("Image Files (*.png *.jpg *.bmp)"));
+    QImage art(filename);
+
+    artLabel->setPixmap(QPixmap::fromImage(art.scaledToWidth(buttonUploadArt->width())));
 }

@@ -24,6 +24,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "dialogaddmedia.h"
+#include "addshowdialog.h"
 #include "logger.h"
 
 #include <QApplication>
