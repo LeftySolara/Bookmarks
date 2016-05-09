@@ -28,6 +28,7 @@
 #include <QErrorMessage>
 #include <QSqlDatabase>
 #include <QSqlTableModel>
+#include <QTableView>
 
 namespace Ui {
 class MainWindow;
@@ -50,7 +51,6 @@ public:
 private slots:
     void on_actionExit_triggered();
     void on_actionAbout_Qt_triggered();
-
     void on_actionAdd_show_triggered();
 
 private:
@@ -58,6 +58,7 @@ private:
     QErrorMessage *errmsg;
     QSqlDatabase db;
     QSqlTableModel *tableModel;
+    QTableView *tableView;
 };
 
 #endif // MAINWINDOW_H

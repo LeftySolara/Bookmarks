@@ -64,6 +64,9 @@ MainWindow::MainWindow(QWidget *parent) :
     tableModel->setTable(settings.value("DefautCategory").toString());
     tableModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
 
+    tableView = new QTableView;
+    tableView->setModel(tableModel);
+
     ui->setupUi(this);
 }
 
@@ -74,6 +77,7 @@ MainWindow::~MainWindow()
     delete ui;
     delete errmsg;
     delete tableModel;
+    delete tableView;
 }
 
 // Check for a config file in the correct location (user scope).
