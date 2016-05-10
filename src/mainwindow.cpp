@@ -120,7 +120,7 @@ void MainWindow::createDatabase()
     QFile databaseFile;
 
     settings.beginGroup("database");
-    QString databasePath = settings.value("path").toString();
+    QString databasePath = settings.value("Path").toString();
     databaseFile.setFileName(databasePath);
 
     if (databaseFile.exists()) {
