@@ -1,5 +1,5 @@
 /******************************************************************************
- * mainwondow.h : the main GUI window for the application
+ * database.h : wrapper for database interactions
  * ****************************************************************************
  * Copyright (C) 2016 Jalen Adams
  *
@@ -21,47 +21,31 @@
  * along with Bookmarks. If not, see <http://www.gnu.org/licenses/>.
  ***************************************************************************/
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef DATABASE_H
+#define DATABASE_H
 
-#include <QMainWindow>
-#include <QErrorMessage>
 #include <QSqlDatabase>
 #include <QSqlTableModel>
 #include <QTableView>
 
-#include "database.h"
-
-namespace Ui {
-class MainWindow;
-}
-
-class MainWindow : public QMainWindow
+class Database
 {
-    Q_OBJECT
-
 public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    Database(QString filename);
+    ~Database();
 
-    bool settingsExist();
-    void applyDefaultSettings();
+    bool connect() { return db.open(); }
+    void close();
+    bool isValid() { return db.isValid(); }
 
-    void createDatabase();
-    bool execSqlScript(QString filename);
-
-private slots:
-    void on_actionExit_triggered();
-    void on_actionAbout_Qt_triggered();
-    void on_actionAdd_show_triggered();
+//    addShow(QString title, int watched, int total, bool ongoing);
+//    addManga(QString title, int read, int total, bool ongoing);
+//    removeEntry(QString tableName, int id);
 
 private:
-    Ui::MainWindow *ui;
-    QErrorMessage *errmsg;
-    QSqlDatabase db_old;
-    QSqlTableModel *tableModel;
-    QTableView *tableView;
-    Database *db;
+    QSqlDatabase db;
+    QSqlTableModel *model;
+    QTableView *view;
 };
 
-#endif // MAINWINDOW_H
+#endif // DATABASE_H

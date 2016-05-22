@@ -1,5 +1,5 @@
 /******************************************************************************
- * mainwondow.h : the main GUI window for the application
+ * database.cpp : wrapper for database interactions
  * ****************************************************************************
  * Copyright (C) 2016 Jalen Adams
  *
@@ -21,47 +21,46 @@
  * along with Bookmarks. If not, see <http://www.gnu.org/licenses/>.
  ***************************************************************************/
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
-
-#include <QMainWindow>
-#include <QErrorMessage>
-#include <QSqlDatabase>
-#include <QSqlTableModel>
-#include <QTableView>
-
 #include "database.h"
+#include <QFileInfo>
+#include <QFile>
+#include <QtDebug>
+#include <QSettings>
 
-namespace Ui {
-class MainWindow;
+Database::Database(QString filename)
+{
+    QFileInfo dbFileInfo;
+    dbFileInfo.setFile(filename);
+
+    if (!dbFileInfo.exists()) { // create the file
+        qDebug() << "Creating database file at " + filename;
+
+        QFile dbFile;
+        dbFile.setFileName(filename);
+        dbFile.open(QIODevice::ReadWrite);
+        if (!dbFile.exists()) {
+            qCritical() << "Failed to create the database file";
+            return;
+        }
+        dbFile.close();
+    }
+
+    db.setDatabaseName(filename);
 }
 
-class MainWindow : public QMainWindow
+Database::~Database()
 {
-    Q_OBJECT
+    if (db.open()) {
+        db.close();
+    }
 
-public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+//    delete model;
+//    delete view;
+}
 
-    bool settingsExist();
-    void applyDefaultSettings();
-
-    void createDatabase();
-    bool execSqlScript(QString filename);
-
-private slots:
-    void on_actionExit_triggered();
-    void on_actionAbout_Qt_triggered();
-    void on_actionAdd_show_triggered();
-
-private:
-    Ui::MainWindow *ui;
-    QErrorMessage *errmsg;
-    QSqlDatabase db_old;
-    QSqlTableModel *tableModel;
-    QTableView *tableView;
-    Database *db;
-};
-
-#endif // MAINWINDOW_H
+void Database::close()
+{
+    if (db.isOpen()) {
+        db.close();
+    }
+}

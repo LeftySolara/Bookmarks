@@ -19,17 +19,19 @@ SOURCES += \
     src/main.cpp \
     src/mainwindow.cpp \
     src/logger.cpp \
-    src/dialogaddmedia.cpp
+    src/dialogaddmedia.cpp \
+    src/database.cpp
 
 HEADERS  += \
     src/show.h \
     src/mainwindow.h \
     src/logger.h \
-    src/dialogaddmedia.h
+    src/dialogaddmedia.h \
+    src/database.h
 
 FORMS    += \
     src/mainwindow.ui \
-    src/dialogaddmedia.ui
+    src/dialogaddmedia.ui \
 
 DISTFILES += \
     defaults.pri \

@@ -24,7 +24,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "dialogaddmedia.h"
-#include "addshowdialog.h"
 #include "logger.h"
 
 #include <QApplication>
@@ -48,7 +47,6 @@ MainWindow::MainWindow(QWidget *parent) :
     if (!logger::setup()) {
         qDebug() << "Could not set up logging function";
     }
-
     qInfo() << "Starting new application session...";
     errmsg = new QErrorMessage(this);
 
@@ -57,27 +55,34 @@ MainWindow::MainWindow(QWidget *parent) :
         applyDefaultSettings();
     }
 
-    createDatabase();
+//    createDatabase();
+
     QSettings settings;
+    settings.beginGroup("Database");
+    db = new Database(settings.value("path").toString());
+    db->connect();
+    db->close();
+    settings.endGroup();
 
-    tableModel = new QSqlTableModel(this, db);
-    tableModel->setTable(settings.value("DefautCategory").toString());
-    tableModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
+//    tableModel = new QSqlTableModel(this, db);
+//    tableModel->setTable(settings.value("default_category").toString());
+//    tableModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
 
-    tableView = new QTableView;
-    tableView->setModel(tableModel);
+//    tableView = new QTableView;
+//    tableView->setModel(tableModel);
 
     ui->setupUi(this);
 }
 
 MainWindow::~MainWindow()
 {
-    db.close();
+    db_old.close();
 
     delete ui;
     delete errmsg;
-    delete tableModel;
-    delete tableView;
+//    delete tableModel;
+//    delete tableView;
+    delete db;
 }
 
 // Check for a config file in the correct location (user scope).
@@ -105,9 +110,9 @@ void MainWindow::applyDefaultSettings()
     QString settingsPath = settings_info.fileName();
     QString databasePath = settings.fileName().replace(settingsPath, DATABASE_NAME);
 
-    settings.beginGroup("database");
-    settings.setValue("Path", databasePath);
-    settings.setValue("DefaultCategory", "show");
+    settings.beginGroup("Database");
+    settings.setValue("path", databasePath);
+    settings.setValue("default_category", "show");
     settings.endGroup();
 }
 
@@ -119,8 +124,8 @@ void MainWindow::createDatabase()
     QSettings settings;
     QFile databaseFile;
 
-    settings.beginGroup("database");
-    QString databasePath = settings.value("Path").toString();
+    settings.beginGroup("Database");
+    QString databasePath = settings.value("path").toString();
     databaseFile.setFileName(databasePath);
 
     if (databaseFile.exists()) {
@@ -138,10 +143,10 @@ void MainWindow::createDatabase()
     databaseFile.close();
 
     // Create a connection to the database
-    db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName(databasePath);
+    db_old = QSqlDatabase::addDatabase("QSQLITE");
+    db_old.setDatabaseName(databasePath);
 
-    if (!db.open()) {
+    if (!db_old.open()) {
         qCritical() << "Could not open database file";
         errmsg->showMessage("Error opening database file.");
         QCoreApplication::exit();
@@ -160,7 +165,7 @@ void MainWindow::createDatabase()
 // If execution is successful, returns true. Otherwise, returns false.
 bool MainWindow::execSqlScript(QString filename)
 {
-    QSqlQuery *qry = new QSqlQuery(db);
+    QSqlQuery *qry = new QSqlQuery(db_old);
     QFile *script = new QFile(this);
     script->setFileName(filename);
 
