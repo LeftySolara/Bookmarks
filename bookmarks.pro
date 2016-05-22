@@ -7,6 +7,12 @@
 QT       += core gui sql
 QTPLUGIN += -plugin-sql-sqlite
 
+# The application version
+VERSION = 0.1
+
+# Preprocessor macro to get the application version in our application
+DEFINES += APP_VERSION=\\\"$$VERSION\\\"
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = bookmarks

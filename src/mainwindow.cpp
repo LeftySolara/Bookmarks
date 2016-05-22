@@ -33,6 +33,9 @@
 #include <QFileInfo>
 #include <QSqlQuery>
 
+#define VERSION_MAJOR 0
+#define VERSION_MINOR 1
+
 #define DATABASE_NAME "bookmarks.sqlite"
 #define DATABASE_INIT_SCRIPT "../scripts/db_init.sql"
 
@@ -43,6 +46,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QCoreApplication::setOrganizationName("Jalen Adams");
     QCoreApplication::setApplicationName("Bookmarks");
     QCoreApplication::setOrganizationDomain("jalenkadams.me");
+
+    ui->setupUi(this);
 
     if (!logger::setup()) {
         qDebug() << "Could not set up logging function";
@@ -55,33 +60,31 @@ MainWindow::MainWindow(QWidget *parent) :
         applyDefaultSettings();
     }
 
-//    createDatabase();
-
     QSettings settings;
     settings.beginGroup("Database");
     db = new Database(settings.value("path").toString());
+
+    // initialize the database if necessary
+    // TODO: write scripts to update database structure without deleting everything
+    if (db->versionMajor() != VERSION_MAJOR || db->versionMinor() != VERSION_MINOR) {
+        QFile script;
+        script.setFileName(DATABASE_INIT_SCRIPT);
+        if (!db->executeSqlScript(script)) {
+            qFatal() << "Failed to initialize database";
+            errmsg->showMessage("Failed to initialize database.");
+            QCoreApplication::exit();
+        }
+    }
     db->connect();
-    db->close();
     settings.endGroup();
-
-//    tableModel = new QSqlTableModel(this, db);
-//    tableModel->setTable(settings.value("default_category").toString());
-//    tableModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
-
-//    tableView = new QTableView;
-//    tableView->setModel(tableModel);
-
-    ui->setupUi(this);
 }
 
 MainWindow::~MainWindow()
 {
-    db_old.close();
+    db->close();
 
     delete ui;
     delete errmsg;
-//    delete tableModel;
-//    delete tableView;
     delete db;
 }
 
@@ -114,95 +117,6 @@ void MainWindow::applyDefaultSettings()
     settings.setValue("path", databasePath);
     settings.setValue("default_category", "show");
     settings.endGroup();
-}
-
-// Create the application database in the location specified in the user's settings.
-// By default, the location is $HOME/.config (on Unix) or %APPDATA% (on Windows).
-// If the database already exists, this method does nothing.
-void MainWindow::createDatabase()
-{
-    QSettings settings;
-    QFile databaseFile;
-
-    settings.beginGroup("Database");
-    QString databasePath = settings.value("path").toString();
-    databaseFile.setFileName(databasePath);
-
-    if (databaseFile.exists()) {
-        return;
-    }
-
-    // Create the database file
-    qDebug() << "Creating database file at " + databasePath + "...";
-    databaseFile.open(QIODevice::ReadWrite);
-    if (!databaseFile.exists()) {
-        qCritical() << "Could not create database file";
-        errmsg->showMessage("Error creating database file.");
-        return;
-    }
-    databaseFile.close();
-
-    // Create a connection to the database
-    db_old = QSqlDatabase::addDatabase("QSQLITE");
-    db_old.setDatabaseName(databasePath);
-
-    if (!db_old.open()) {
-        qCritical() << "Could not open database file";
-        errmsg->showMessage("Error opening database file.");
-        QCoreApplication::exit();
-    }
-
-    // read a sql script to initialize the database
-    if (!execSqlScript(DATABASE_INIT_SCRIPT)) {
-        qDebug() << "Error reading sql script";
-    }
-
-    settings.endGroup();
-    qInfo() << "Database created successfully";
-}
-
-// Read a given SQL script and execute each statement on the application database.
-// If execution is successful, returns true. Otherwise, returns false.
-bool MainWindow::execSqlScript(QString filename)
-{
-    QSqlQuery *qry = new QSqlQuery(db_old);
-    QFile *script = new QFile(this);
-    script->setFileName(filename);
-
-    if (!script->open(QIODevice::ReadOnly)) {
-        return false;
-    }
-
-    QTextStream inStream(script);
-    QString sqlStatement = "";
-
-    while (!inStream.atEnd())
-    {
-        QString line = inStream.readLine();
-
-        if (line.startsWith("--") || line.length() == 0) { // ignore comments and blank lines
-            continue;
-        }
-
-        sqlStatement += line;
-        if (sqlStatement.endsWith(";")) {
-            // remove semicolon at end of line, since QSqlQuery adds them automatically
-            sqlStatement.chop(1);
-            if (qry->prepare(sqlStatement)) {
-                qry->exec();
-                sqlStatement = "";
-            }
-            else {
-              return false;
-            }
-        }
-    }
-    script->close();
-
-    delete script;
-    delete qry;
-
-    return true;
 }
 
 void MainWindow::on_actionExit_triggered()

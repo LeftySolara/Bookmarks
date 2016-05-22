@@ -23,9 +23,10 @@
 
 #include "database.h"
 #include <QFileInfo>
-#include <QFile>
 #include <QtDebug>
 #include <QSettings>
+#include <QSqlQuery>
+#include <QTextStream>
 
 Database::Database(QString filename)
 {
@@ -63,4 +64,40 @@ void Database::close()
     if (db.isOpen()) {
         db.close();
     }
+}
+
+bool Database::executeSqlScript(QFile script)
+{
+    if (!script.open(QIODevice::ReadOnly)) {
+        qDebug() << "Could not open script file: " + script.fileName();
+        return false;
+    }
+
+    QTextStream inStream(script);
+    QString sqlStatement = "";
+    QSqlQuery query;
+
+    while (!inStream.atEnd()) {
+        QString line = inStream.readLine();
+        // ignore comments and blank lines
+        if (line.startsWith("--") || line.length() == 0) {
+            continue;
+        }
+
+        sqlStatement += line;
+        if (sqlStatement.endsWith(";")) {
+            // remove semicolon, since QSqlQuery adds them automatically
+            sqlStatement.chop(1);
+            if (query.prepare(sqlStatement)) {
+                query.exec();
+                sqlStatement = "";
+            }
+            else {
+                qDebug() << "Error executing SQL script.";
+                return false;
+            }
+        }
+    }
+    script.close();
+    return true;
 }

@@ -27,6 +27,7 @@
 #include <QSqlDatabase>
 #include <QSqlTableModel>
 #include <QTableView>
+#include <QFile>
 
 class Database
 {
@@ -37,6 +38,10 @@ public:
     bool connect() { return db.open(); }
     void close();
     bool isValid() { return db.isValid(); }
+    bool executeSqlScript(QFile script);
+
+    int versionMajor();
+    int versionMinor();
 
 //    addShow(QString title, int watched, int total, bool ongoing);
 //    addManga(QString title, int read, int total, bool ongoing);

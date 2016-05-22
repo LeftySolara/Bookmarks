@@ -26,10 +26,6 @@
 
 #include <QMainWindow>
 #include <QErrorMessage>
-#include <QSqlDatabase>
-#include <QSqlTableModel>
-#include <QTableView>
-
 #include "database.h"
 
 namespace Ui {
@@ -47,9 +43,6 @@ public:
     bool settingsExist();
     void applyDefaultSettings();
 
-    void createDatabase();
-    bool execSqlScript(QString filename);
-
 private slots:
     void on_actionExit_triggered();
     void on_actionAbout_Qt_triggered();
@@ -58,9 +51,6 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QErrorMessage *errmsg;
-    QSqlDatabase db_old;
-    QSqlTableModel *tableModel;
-    QTableView *tableView;
     Database *db;
 };
 
