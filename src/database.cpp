@@ -66,14 +66,14 @@ void Database::close()
     }
 }
 
-bool Database::executeSqlScript(QFile script)
+bool Database::executeSqlScript(QFile &script)
 {
     if (!script.open(QIODevice::ReadOnly)) {
         qDebug() << "Could not open script file: " + script.fileName();
         return false;
     }
 
-    QTextStream inStream(script);
+    QTextStream inStream(&script);
     QString sqlStatement = "";
     QSqlQuery query;
 

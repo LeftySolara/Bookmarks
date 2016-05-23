@@ -70,7 +70,7 @@ MainWindow::MainWindow(QWidget *parent) :
         QFile script;
         script.setFileName(DATABASE_INIT_SCRIPT);
         if (!db->executeSqlScript(script)) {
-            qFatal() << "Failed to initialize database";
+            qCritical() << "Failed to initialize database";
             errmsg->showMessage("Failed to initialize database.");
             QCoreApplication::exit();
         }

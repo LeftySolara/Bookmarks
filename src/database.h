@@ -38,10 +38,12 @@ public:
     bool connect() { return db.open(); }
     void close();
     bool isValid() { return db.isValid(); }
-    bool executeSqlScript(QFile script);
+    bool executeSqlScript(QFile &script);
 
-    int versionMajor();
-    int versionMinor();
+    // Temporary function definitions to satisfy the compiler
+    // These will eventually query the database for the information
+    int versionMajor() { return 0; }
+    int versionMinor() { return 1; }
 
 //    addShow(QString title, int watched, int total, bool ongoing);
 //    addManga(QString title, int read, int total, bool ongoing);
