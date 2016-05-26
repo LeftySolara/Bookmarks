@@ -46,7 +46,9 @@ Database::Database(QString filename)
         dbFile.close();
     }
 
+    db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(filename);
+    db.open();
 }
 
 Database::~Database()
@@ -75,7 +77,7 @@ bool Database::executeSqlScript(QFile &script)
 
     QTextStream inStream(&script);
     QString sqlStatement = "";
-    QSqlQuery query;
+    QSqlQuery query(db);
 
     while (!inStream.atEnd()) {
         QString line = inStream.readLine();

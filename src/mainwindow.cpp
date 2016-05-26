@@ -75,7 +75,6 @@ MainWindow::MainWindow(QWidget *parent) :
             QCoreApplication::exit();
         }
     }
-    db->connect();
     settings.endGroup();
 }
 

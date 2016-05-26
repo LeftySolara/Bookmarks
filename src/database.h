@@ -43,7 +43,7 @@ public:
     // Temporary function definitions to satisfy the compiler
     // These will eventually query the database for the information
     int versionMajor() { return 0; }
-    int versionMinor() { return 1; }
+    int versionMinor() { return 0; }
 
 //    addShow(QString title, int watched, int total, bool ongoing);
 //    addManga(QString title, int read, int total, bool ongoing);
