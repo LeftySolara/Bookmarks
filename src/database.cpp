@@ -49,6 +49,20 @@ Database::Database(QString filename)
     db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(filename);
     db.open();
+
+    // set up the database model
+    model = new QSqlTableModel();
+
+    QSettings settings;
+    settings.beginGroup("Database");
+    model->setTable(settings.value("default_category").toString());
+    model->setEditStrategy(QSqlTableModel::OnManualSubmit);
+    model->select();
+    // TODO: Set these to change depending on what table is set
+    model->setHeaderData(0, Qt::Horizontal, QObject::tr("Title"));
+    model->setHeaderData(1, Qt::Horizontal, QObject::tr("Completed"));
+    model->setHeaderData(2, Qt::Horizontal, QObject::tr("Total"));
+    model->setHeaderData(3, Qt::Horizontal, QObject::tr("Ongoing?"));
 }
 
 Database::~Database()
@@ -57,7 +71,7 @@ Database::~Database()
         db.close();
     }
 
-//    delete model;
+    delete model;
 //    delete view;
 }
 
