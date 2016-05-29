@@ -30,13 +30,14 @@ DialogAddMedia::DialogAddMedia(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DialogAddMedia)
 {
+    setupLayoutButtons();
     setupLayoutInfo();
-    setupLayoutArtwork();
 
-    layoutMaster = new QHBoxLayout();
-    layoutMaster->addLayout(layoutArtwork);
+    layoutMaster = new QVBoxLayout();
     layoutMaster->addLayout(layoutInfo);
-    layoutMaster->setSizeConstraint(QHBoxLayout::SetFixedSize);
+    layoutMaster->addSpacing(15);
+    layoutMaster->addLayout(layoutButtons);
+    layoutMaster->setSizeConstraint(QVBoxLayout::SetFixedSize);
     this->setLayout(layoutMaster);
 
     ui->setupUi(this);
@@ -48,13 +49,9 @@ DialogAddMedia::~DialogAddMedia()
     delete spinBoxEpisodesWatched;
     delete spinBoxEpisodesTotal;
     delete comboBoxStatus;
-    delete artwork;
-    delete artLabel;
-    delete buttonUploadArt;
-    delete buttonDownloadArt;
 
     delete layoutInfo;
-    delete layoutArtwork;
+    delete layoutButtons;
     delete layoutMaster;
     delete ui;
 }
@@ -63,19 +60,20 @@ DialogAddMedia::~DialogAddMedia()
 void DialogAddMedia::setupLayoutInfo()
 {
     layoutInfo = new QFormLayout();
+    layoutInfo->setFormAlignment(Qt::AlignCenter);
     layoutInfo->setSizeConstraint(QFormLayout::SetFixedSize);
 
     lineEditTitle = new QLineEdit();
-    lineEditTitle->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    lineEditTitle->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     spinBoxEpisodesWatched = new QSpinBox();
-    spinBoxEpisodesWatched->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    spinBoxEpisodesWatched->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     spinBoxEpisodesTotal = new QSpinBox();
-    spinBoxEpisodesTotal->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    spinBoxEpisodesTotal->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     comboBoxStatus = new QComboBox();
-    comboBoxStatus->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    comboBoxStatus->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     comboBoxStatus->addItem("Ongoing");
     comboBoxStatus->addItem("Completed");
@@ -86,37 +84,18 @@ void DialogAddMedia::setupLayoutInfo()
     layoutInfo->addRow("Status", comboBoxStatus);
 }
 
-// Set up the left half of the dialog. Will contain preview artwork for the series, a button for
-// choosing art from a local file, and a button for downloading art from the web.
-void DialogAddMedia::setupLayoutArtwork()
+void DialogAddMedia::setupLayoutButtons()
 {
-    layoutArtwork = new QVBoxLayout();
-    layoutArtwork->setSizeConstraint(QVBoxLayout::SetFixedSize);
+    layoutButtons = new QHBoxLayout();
+    buttonAccept = new QPushButton("Accept");
+    buttonReject = new QPushButton("Cancel");
 
-    buttonUploadArt = new QPushButton("Choose from file");
-    buttonDownloadArt = new QPushButton("Download from web");
+    buttonAccept->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    buttonReject->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
-    connect(buttonUploadArt, SIGNAL(clicked()), this, SLOT(uploadArtwork()));
+    layoutButtons->addWidget(buttonAccept);
+    layoutButtons->addWidget(buttonReject);
 
-    QSize buttonSize(150, 40);
-    buttonUploadArt->setFixedSize(buttonSize);
-    buttonDownloadArt->setFixedSize(buttonSize);
-
-    artwork = new QImage(":/images/art_placeholder");
-    artLabel = new QLabel();
-
-    artLabel->setPixmap(QPixmap::fromImage(artwork->scaledToWidth(buttonDownloadArt->width())));
-    artLabel->setFixedSize(buttonSize.width(), 540);
-
-    layoutArtwork->addWidget(artLabel);
-    layoutArtwork->addWidget(buttonUploadArt);
-    layoutArtwork->addWidget(buttonDownloadArt);
-}
-
-void DialogAddMedia::uploadArtwork()
-{
-    QString filename = QFileDialog::getOpenFileName(this, tr("Open Image"), "~/", tr("Image Files (*.png *.jpg *.bmp)"));
-    QImage art(filename);
-
-    artLabel->setPixmap(QPixmap::fromImage(art.scaledToWidth(buttonUploadArt->width())));
+    connect(buttonAccept, SIGNAL(clicked()), this, SLOT(accept()));
+    connect(buttonReject, SIGNAL(clicked()), this, SLOT(reject()));
 }

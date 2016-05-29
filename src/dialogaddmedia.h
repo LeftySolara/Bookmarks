@@ -25,8 +25,6 @@
 #define DIALOGADDMEDIA_H
 
 #include <QDialog>
-#include <QImage>
-#include <QLabel>
 #include <QSpinBox>
 #include <QPushButton>
 #include <QComboBox>
@@ -48,28 +46,22 @@ public:
     ~DialogAddMedia();
 
     void setupLayoutInfo();
-    void setupLayoutArtwork();
-
-private slots:
-    void uploadArtwork();
-
+    void setupLayoutButtons();
 
 private:
     Ui::DialogAddMedia *ui;
 
-   QHBoxLayout* layoutMaster;
-   QVBoxLayout* layoutArtwork;
-   QFormLayout* layoutInfo;
+   QVBoxLayout *layoutMaster;
+   QFormLayout *layoutInfo;
+   QHBoxLayout *layoutButtons;
 
-   QLineEdit* lineEditTitle;
-   QSpinBox* spinBoxEpisodesWatched;
-   QSpinBox* spinBoxEpisodesTotal;
-   QComboBox* comboBoxStatus;
+   QLineEdit *lineEditTitle;
+   QSpinBox *spinBoxEpisodesWatched;
+   QSpinBox *spinBoxEpisodesTotal;
+   QComboBox *comboBoxStatus;
 
-   QImage* artwork;
-   QLabel* artLabel;
-   QPushButton* buttonUploadArt;
-   QPushButton* buttonDownloadArt;
+   QPushButton *buttonAccept;
+   QPushButton *buttonReject;
 };
 
 #endif // DIALOGADDMEDIA_H
