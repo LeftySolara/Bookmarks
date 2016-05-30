@@ -39,15 +39,16 @@ public:
     void close();
     bool isValid() { return db.isValid(); }
     bool executeSqlScript(QFile &script);
+    void show();
 
     // Temporary function definitions to satisfy the compiler
     // These will eventually query the database for the information
     int versionMajor() { return 0; }
     int versionMinor() { return 1; }
 
-//    addShow(QString title, int watched, int total, bool ongoing);
-//    addManga(QString title, int read, int total, bool ongoing);
-//    removeEntry(QString tableName, int id);
+   void addShow(QString title, int watched, int total, bool ongoing);
+//   void addManga(QString title, int read, int total, bool ongoing);
+//   void removeEntry(QString tableName, int id);
 
 private:
     QSqlDatabase db;

@@ -25,7 +25,6 @@
 #include "ui_mainwindow.h"
 #include "dialogaddmedia.h"
 #include "logger.h"
-
 #include <QApplication>
 #include <QDebug>
 #include <QSettings>
@@ -131,5 +130,13 @@ void MainWindow::on_actionAbout_Qt_triggered()
 void MainWindow::on_actionAdd_show_triggered()
 {
     DialogAddMedia *dialog = new DialogAddMedia();
-    dialog->exec();
+    if (dialog->exec() == QDialog::Accepted) {
+        QString title = dialog->title();
+        int watched = dialog->num_completed();
+        int total = dialog->num_total();
+        bool ongoing = dialog->ongoing();
+
+        db->addShow(title, watched, total, ongoing);
+        db->show();
+    }
 }

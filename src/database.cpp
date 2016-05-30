@@ -26,6 +26,7 @@
 #include <QtDebug>
 #include <QSettings>
 #include <QSqlQuery>
+#include <QSqlRecord>
 #include <QTextStream>
 
 Database::Database(QString filename)
@@ -63,6 +64,9 @@ Database::Database(QString filename)
     model->setHeaderData(1, Qt::Horizontal, QObject::tr("Completed"));
     model->setHeaderData(2, Qt::Horizontal, QObject::tr("Total"));
     model->setHeaderData(3, Qt::Horizontal, QObject::tr("Ongoing?"));
+
+    view = new QTableView();
+    view->setModel(model);
 }
 
 Database::~Database()
@@ -116,4 +120,24 @@ bool Database::executeSqlScript(QFile &script)
     }
     script.close();
     return true;
+}
+
+// just here for testing
+void Database::show()
+{
+    view->show();
+}
+
+void Database::addShow(QString title, int watched, int total, bool ongoing)
+{
+    QSqlQuery query(db);
+
+    query.prepare("INSERT INTO show VALUES (:id, :title, :episodes_watched, :episodes_toal, ongoing)");
+    query.bindValue(":id", model->rowCount());
+    query.bindValue(":title", title);
+    query.bindValue("episodes_watched", watched);
+    query.bindValue("episodes_total", total);
+    query.bindValue(":ongoing", ongoing);
+
+    model->insertRecord(-1, query.record());
 }

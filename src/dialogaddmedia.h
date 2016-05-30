@@ -48,6 +48,11 @@ public:
     void setupLayoutInfo();
     void setupLayoutButtons();
 
+    QString title() { return lineEditTitle->text(); }
+    int num_completed() { return spinBoxEpisodesWatched->value(); }
+    int num_total() { return spinBoxEpisodesTotal->value(); }
+    bool ongoing() { return true; }
+
 private:
     Ui::DialogAddMedia *ui;
 
