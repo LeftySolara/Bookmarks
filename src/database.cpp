@@ -64,9 +64,6 @@ Database::Database(QString filename)
     model->setHeaderData(1, Qt::Horizontal, QObject::tr("Completed"));
     model->setHeaderData(2, Qt::Horizontal, QObject::tr("Total"));
     model->setHeaderData(3, Qt::Horizontal, QObject::tr("Ongoing?"));
-
-    view = new QTableView();
-    view->setModel(model);
 }
 
 Database::~Database()
@@ -76,7 +73,6 @@ Database::~Database()
     }
 
     delete model;
-//    delete view;
 }
 
 void Database::close()
@@ -122,12 +118,7 @@ bool Database::executeSqlScript(QFile &script)
     return true;
 }
 
-// just here for testing
-void Database::show()
-{
-    view->show();
-}
-
+// Add a new show to the database model
 void Database::addShow(QString title, int watched, int total, bool ongoing)
 {
     QSqlQuery query(db);

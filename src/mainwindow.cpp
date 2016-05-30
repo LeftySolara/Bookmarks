@@ -137,6 +137,5 @@ void MainWindow::on_actionAdd_show_triggered()
         bool ongoing = dialog->ongoing();
 
         db->addShow(title, watched, total, ongoing);
-        db->show();
     }
 }

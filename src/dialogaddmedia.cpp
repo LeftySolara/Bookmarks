@@ -25,6 +25,7 @@
 #include "ui_dialogaddmedia.h"
 #include <QSize>
 #include <QFileDialog>
+#include "QDebug"
 
 DialogAddMedia::DialogAddMedia(QWidget *parent) :
     QDialog(parent),
@@ -98,4 +99,24 @@ void DialogAddMedia::setupLayoutButtons()
 
     connect(buttonAccept, SIGNAL(clicked()), this, SLOT(accept()));
     connect(buttonReject, SIGNAL(clicked()), this, SLOT(reject()));
+}
+
+QString DialogAddMedia::title()
+{
+    return lineEditTitle->text();
+}
+
+int DialogAddMedia::num_completed()
+{
+    return spinBoxEpisodesWatched->value();
+}
+
+int DialogAddMedia::num_total()
+{
+    return spinBoxEpisodesTotal->value();
+}
+
+bool DialogAddMedia::ongoing()
+{
+    return comboBoxStatus->currentText().toLower() == "ongoing";
 }
